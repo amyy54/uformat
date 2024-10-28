@@ -1,0 +1,17 @@
+{
+    "version": 1,
+    "formats":
+    {
+        "Go": {
+            "glob": "*.go",
+            "command": "gofmt",
+            "args": ["-w", "<file>"]
+        },
+        "Markdown": {
+            "glob": "*.md",
+            "command": "mdformat",
+            "args": ["--wrap", "80", "<file>"]
+        }
+    },
+    "ignore": ["*go.mod", "*go.sum"]
+}
