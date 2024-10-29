@@ -19,7 +19,8 @@ func matchFiles(directory string, formatters []configloader.Formatter, ignores [
 		if file_info.IsDir() {
 			_, git_err := findRepository(directory)
 			if git_err != nil {
-				slog.Warn("not a git directory, not checking ignores", "error", git_err)
+				slog.Warn("not a git directory, not checking gitignores", "error", git_err)
+				use_git = false
 			}
 			gave_git_warning := false
 			err := filepath.WalkDir(directory, func(path string, d fs.DirEntry, err error) error {
@@ -38,7 +39,7 @@ func matchFiles(directory string, formatters []configloader.Formatter, ignores [
 							if found, formatter := matchFile(path, formatters); found {
 								res = append(res, formatter)
 							} else {
-								slog.Info("did not find a formatter for the path specified", "path", path)
+								slog.Warn("did not find a formatter for the path specified", "path", path)
 							}
 						}
 					}
