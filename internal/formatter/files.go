@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gobwas/glob"
 
@@ -62,10 +63,12 @@ func matchFiles(directory string, formatters []configloader.Formatter, ignores [
 }
 
 func matchFile(path string, formatters []configloader.Formatter) (bool, FileFormatter) {
-	for _, formatter := range formatters {
-		g := glob.MustCompile(formatter.Glob)
-		if g.Match(path) {
-			return true, FileFormatter{File: path, Format: formatter}
+	for _, formatter_group := range formatters {
+		for _, formatter := range strings.Split(formatter_group.Glob, "|") {
+			g := glob.MustCompile(formatter)
+			if g.Match(path) {
+				return true, FileFormatter{File: path, Format: formatter_group}
+			}
 		}
 	}
 	return false, FileFormatter{}
