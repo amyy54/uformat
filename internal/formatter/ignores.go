@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"slices"
 
 	"github.com/gobwas/glob"
 )
@@ -25,12 +24,18 @@ func isIgnored(directory string, path string, name string, ignores []glob.Glob, 
 }
 
 func isDefaultIgnored(name string) bool {
-	defaults := []string{
-		".git",
-		".gitignore",
-		".uformat.json",
+	defaults := []glob.Glob{
+		glob.MustCompile(".git"),
+		glob.MustCompile(".gitignore"),
+		glob.MustCompile(".uformat.json"),
+		glob.MustCompile("*LICENSE*"),
 	}
-	return slices.Contains(defaults, name)
+	for _, defaults_glob := range defaults {
+		if defaults_glob.Match(name) {
+			return true
+		}
+	}
+	return false
 }
 
 func isConfigIgnored(path string, ignores []glob.Glob) bool {

@@ -13,5 +13,5 @@
             "args": ["--wrap", "80", "<file>"]
         }
     },
-    "ignore": ["*go.mod", "*go.sum"]
+    "ignore": ["*go.mod", "*go.sum", "*Makefile"]
 }
