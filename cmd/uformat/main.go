@@ -23,12 +23,8 @@ func main() {
 
 	log.SetFlags(log.Lshortfile)
 
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	flag.StringVar(&config_location, "config", filepath.Join(cwd, ".uformat.json"), "Formatter configuration file.")
-	flag.StringVar(&target_dir, "directory", cwd, "Target directory.")
+	flag.StringVar(&config_location, "config", "./.uformat.json", "Formatter configuration file.")
+	flag.StringVar(&target_dir, "directory", ".", "Target directory.")
 	flag.BoolVar(&show_formats, "list", false, "List available formats.")
 	flag.BoolVar(&ignore_git, "ignore-git", false, "Ignores git and all related functions (checking gitignore, etc).")
 
@@ -44,18 +40,35 @@ func main() {
 		slog.SetLogLoggerLevel(slog.LevelWarn)
 	}
 
-	config_location, err = filepath.Abs(config_location)
+	resolve_conf_location, err := filepath.Abs(config_location)
 	if err != nil {
 		log.Fatal("could not resolve config_location")
 	}
+
+	if config_location == "./.uformat.json" {
+		if _, err := os.Stat(resolve_conf_location); err != nil {
+			slog.Info("file not found in current directory, trying home folder", "config_location", config_location, "resolve_conf_location", resolve_conf_location)
+			homedir, err := os.UserHomeDir()
+			if err != nil {
+				log.Fatal("could not resolve home folder")
+			}
+			path := filepath.Join(homedir, ".uformat.json")
+			if _, err := os.Stat(path); err == nil {
+				resolve_conf_location = path
+			} else {
+				log.Fatal("no format file found in home folder or current folder, exiting")
+			}
+		}
+	}
+
 	target_dir, err = filepath.Abs(target_dir)
 	if err != nil {
 		log.Fatal("could not resolve target_dir")
 	}
 
-	slog.Debug("flags parsed", "config_location", config_location, "target_dir", target_dir, "show_formats", show_formats, "ignore_git", ignore_git)
+	slog.Debug("flags parsed", "config_location", config_location, "resolved_config_location", resolve_conf_location, "target_dir", target_dir, "show_formats", show_formats, "ignore_git", ignore_git)
 
-	config, err := configloader.LoadConfig(config_location)
+	config, err := configloader.LoadConfig(resolve_conf_location)
 	if err != nil {
 		log.Fatal(err)
 	}
