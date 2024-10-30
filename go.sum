@@ -1,2 +1,4 @@
 github.com/gobwas/glob v0.2.3 h1:A4xDbljILXROh+kObIiy5kIaPYD8e96x1tgBhUI5J+Y=
 github.com/gobwas/glob v0.2.3/go.mod h1:d3Ez4x06l9bZtSvzIay5+Yzi0fmZzPgnTbPcKjJAkT8=
+github.com/ianbruene/go-difflib v1.2.0 h1:iARmgaCq6nW5QptdoFm0PYAyNGix3xw/xRgEwphJSZw=
+github.com/ianbruene/go-difflib v1.2.0/go.mod h1:uJbrQ06VPxjRiRIrync+E6VcWFGW2dWqw2gvQp6HQPY=

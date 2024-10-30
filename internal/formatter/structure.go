@@ -6,3 +6,8 @@ type FileFormatter struct {
 	File   string
 	Format configloader.Formatter
 }
+
+type DiffFormatter struct {
+	FileFormatter
+	DiffOriginal string
+}

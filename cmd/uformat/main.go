@@ -22,6 +22,7 @@ func main() {
 	var target_dir string
 	var show_formats bool
 	var ignore_git bool
+	var diff_mode bool
 
 	var v bool
 	var vv bool
@@ -34,6 +35,7 @@ func main() {
 	flag.StringVar(&target_dir, "directory", ".", "Target directory to format.")
 	flag.BoolVar(&show_formats, "list", false, "List available formats in the loaded configuration file.")
 	flag.BoolVar(&ignore_git, "ignore-git", false, "Ignore git and all related functions, such as checking gitignore.")
+	flag.BoolVar(&diff_mode, "diff", false, "Instead of formatting, print the difference. This acts as a universal dry-run.")
 
 	flag.BoolVar(&v, "v", false, "Print logs tagged \"Info\" or higher.")
 	flag.BoolVar(&vv, "vv", false, "Print logs tagged \"Debug\" or higher.")
@@ -99,12 +101,16 @@ func main() {
 		}
 		os.Exit(0)
 	} else {
-		count, _, err := formatter.Format(config, target_dir, !ignore_git)
+		count, output, err := formatter.Format(config, target_dir, !ignore_git, diff_mode)
 
 		if err != nil {
 			log.Fatal(err)
 		} else {
-			fmt.Printf("✨ Formatted %d files\n", count)
+			if diff_mode {
+				fmt.Print(output)
+			} else {
+				fmt.Printf("✨ Formatted %d files\n", count)
+			}
 		}
 	}
 

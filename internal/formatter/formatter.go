@@ -3,20 +3,36 @@ package formatter
 import (
 	"fmt"
 	"log/slog"
+	"os"
 	"os/exec"
 
 	"github.com/amyy54/uformat/internal/configloader"
 )
 
-func Format(config configloader.Config, directory string, use_git bool) (int, string, error) {
+func Format(config configloader.Config, directory string, use_git bool, use_diff bool) (int, string, error) {
 	var output string
 	counter := 0
+	var tempdiffdir string
+	var diff_need_formatting []DiffFormatter
 
 	need_formatting, err := matchFiles(directory, config.ToFormatList(), config.IgnoreToGlob(), use_git)
 
 	if err != nil {
 		return 0, "", err
 	}
+
+	if use_diff {
+		diff_need_formatting, tempdiffdir, err = substituteDiffPaths(directory, need_formatting)
+		if err != nil {
+			return 0, "", err
+		}
+
+		need_formatting = []FileFormatter{}
+		for _, format := range diff_need_formatting {
+			need_formatting = append(need_formatting, format.FileFormatter)
+		}
+	}
+
 	slog.Debug("----------") // Starting process logs
 	for num, need_to_format := range need_formatting {
 		counter++
@@ -27,6 +43,14 @@ func Format(config configloader.Config, directory string, use_git bool) (int, st
 		} else {
 			return 0, "", err
 		}
+	}
+
+	if use_diff {
+		output, err = generateDiffOutput(directory, diff_need_formatting)
+		if err != nil {
+			return 0, "", err
+		}
+		os.RemoveAll(tempdiffdir)
 	}
 
 	return counter, output, nil
