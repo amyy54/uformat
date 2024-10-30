@@ -39,8 +39,17 @@ func substituteDiffPaths(directory string, file_formats []FileFormatter) ([]Diff
 	return res, tmpname, nil
 }
 
-func generateDiffOutput(directory string, formatters []DiffFormatter) (string, error) {
+func generateDiffOutput(directory string, formatters []DiffFormatter, use_git bool) (string, error) {
 	var res string
+
+	if use_git {
+		repo_toplevel, err := findRepository(directory)
+		if err != nil {
+			slog.Info("find repository failed, ignoring", "err", err)
+		} else {
+			directory = repo_toplevel
+		}
+	}
 
 	for _, format := range formatters {
 		orig_file, err := os.ReadFile(format.DiffOriginal)
@@ -54,8 +63,8 @@ func generateDiffOutput(directory string, formatters []DiffFormatter) (string, e
 		diff := difflib.ContextDiff{
 			A:        difflib.SplitLines(string(orig_file)),
 			B:        difflib.SplitLines(string(diff_file)),
-			FromFile: getRelativePath(directory, format.DiffOriginal),
-			ToFile:   getRelativePath(directory, format.DiffOriginal),
+			FromFile: fmt.Sprintf("a/%s", getRelativePath(directory, format.DiffOriginal)),
+			ToFile:   fmt.Sprintf("b/%s", getRelativePath(directory, format.DiffOriginal)),
 		}
 		output, err := difflib.GetUnifiedDiffString(diff)
 		if err != nil {

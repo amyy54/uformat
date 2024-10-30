@@ -46,7 +46,7 @@ func Format(config configloader.Config, directory string, use_git bool, use_diff
 	}
 
 	if use_diff {
-		output, err = generateDiffOutput(directory, diff_need_formatting)
+		output, err = generateDiffOutput(directory, diff_need_formatting, use_git)
 		if err != nil {
 			return 0, "", err
 		}
