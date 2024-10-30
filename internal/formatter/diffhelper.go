@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ianbruene/go-difflib/difflib"
+	"cogentcore.org/core/texteditor/difflib"
 )
 
 func substituteDiffPaths(directory string, file_formats []FileFormatter) ([]DiffFormatter, string, error) {

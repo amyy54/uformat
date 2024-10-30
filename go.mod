@@ -8,4 +8,4 @@ replace github.com/amyy54/uformat/internal/formatter => ./internal/formatter
 
 require github.com/gobwas/glob v0.2.3
 
-require github.com/ianbruene/go-difflib v1.2.0
+require cogentcore.org/core v0.3.5
