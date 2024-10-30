@@ -12,6 +12,11 @@ import (
 	"github.com/amyy54/uformat/internal/formatter"
 )
 
+var (
+	Version     string
+	VersionLong string
+)
+
 func main() {
 	var config_location string
 	var target_dir string
@@ -20,6 +25,8 @@ func main() {
 
 	var v bool
 	var vv bool
+
+	var version bool
 
 	log.SetFlags(log.Lshortfile)
 
@@ -30,7 +37,18 @@ func main() {
 
 	flag.BoolVar(&v, "v", false, "Shows logs with \"Info\" or higher.")
 	flag.BoolVar(&vv, "vv", false, "Shows logs with \"Debug\" or higher.")
+
+	flag.BoolVar(&version, "version", false, "Print the version and exit.")
 	flag.Parse()
+
+	if version {
+		if v || vv {
+			fmt.Printf("uformat: %s\n", VersionLong)
+		} else {
+			fmt.Printf("uformat: %s\n", Version)
+		}
+		os.Exit(0)
+	}
 
 	if vv {
 		slog.SetLogLoggerLevel(slog.LevelDebug)
