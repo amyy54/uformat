@@ -30,13 +30,13 @@ func main() {
 
 	log.SetFlags(log.Lshortfile)
 
-	flag.StringVar(&config_location, "config", "./.uformat.json", "Formatter configuration file.")
-	flag.StringVar(&target_dir, "directory", ".", "Target directory.")
-	flag.BoolVar(&show_formats, "list", false, "List available formats.")
-	flag.BoolVar(&ignore_git, "ignore-git", false, "Ignores git and all related functions (checking gitignore, etc).")
+	flag.StringVar(&config_location, "config", "./.uformat.json", "Configuration file to load.")
+	flag.StringVar(&target_dir, "directory", ".", "Target directory to format.")
+	flag.BoolVar(&show_formats, "list", false, "List available formats in the loaded configuration file.")
+	flag.BoolVar(&ignore_git, "ignore-git", false, "Ignore git and all related functions, such as checking gitignore.")
 
-	flag.BoolVar(&v, "v", false, "Shows logs with \"Info\" or higher.")
-	flag.BoolVar(&vv, "vv", false, "Shows logs with \"Debug\" or higher.")
+	flag.BoolVar(&v, "v", false, "Print logs tagged \"Info\" or higher.")
+	flag.BoolVar(&vv, "vv", false, "Print logs tagged \"Debug\" or higher.")
 
 	flag.BoolVar(&version, "version", false, "Print the version and exit.")
 	flag.Parse()
