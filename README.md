@@ -19,16 +19,20 @@ project and run with just one simple tool.
 ```
 Usage of uformat:
   -config string
-    	Formatter configuration file. (default "./.uformat.json")
+        Configuration file to load. (default "./.uformat.json")
+  -diff
+        Instead of formatting, print the difference. This acts as a universal dry-run.
   -directory string
-    	Target directory. (default ".")
+        Target directory to format. (default ".")
   -ignore-git
-    	Ignores git and all related functions (checking gitignore, etc).
+        Ignore git and all related functions, such as checking gitignore.
   -list
-    	List available formats.
-  -v	Shows logs with "Info" or higher.
+        List available formats in the loaded configuration file.
+  -v    Print logs tagged "Info" or higher.
+  -version
+        Print the version and exit.
   -vv
-    	Shows logs with "Debug" or higher.
+        Print logs tagged "Debug" or higher.
 ```
 
 ## uformat.json
