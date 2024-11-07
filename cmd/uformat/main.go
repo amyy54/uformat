@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/amyy54/uformat/internal/configloader"
 	"github.com/amyy54/uformat/internal/formatter"
@@ -97,7 +98,7 @@ func main() {
 
 	if show_formats {
 		for name, formats := range config.Formats {
-			fmt.Printf("%v, matching \"%v\" | Command: %v\n", name, formats.Glob, formats.Command)
+			fmt.Printf("%s, matching \"%s\" with command: %s (%s)\n", name, formats.Glob, formats.Command, strings.Join(formats.Args, " "))
 		}
 		os.Exit(0)
 	} else {

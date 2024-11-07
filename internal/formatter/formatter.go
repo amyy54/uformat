@@ -34,12 +34,18 @@ func Format(config configloader.Config, directory string, use_git bool, use_diff
 	}
 
 	slog.Debug("----------") // Starting process logs
+	logdir := directory
+	if use_diff {
+		logdir = tempdiffdir
+	}
 	for num, need_to_format := range need_formatting {
 		counter++
-		slog.Info(fmt.Sprintf("%d) running formatter for %v", num+1, need_to_format.File), "format", need_to_format)
+		slog.Info(fmt.Sprintf("%d) running formatter for file %s", num+1, getRelativePath(logdir, need_to_format.File)), "format", need_to_format.ToLogString())
 		if p_output, err := process_execution(need_to_format); err == nil {
 			output += p_output
-			slog.Debug(output)
+			if len(output) > 0 {
+				slog.Debug("output", "output", output)
+			}
 		} else {
 			return 0, "", err
 		}
