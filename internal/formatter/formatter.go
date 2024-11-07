@@ -10,17 +10,36 @@ import (
 	"github.com/amyy54/uformat/internal/configloader"
 )
 
-func Format(config configloader.Config, directory string, use_git bool, use_diff bool, abs_path bool) (int, string, string, error) {
+func MatchSingle(config configloader.Config, path string) (FileFormatter, error) {
+	if _, err := os.Stat(path); err == nil {
+		matched, formatter := matchFile(path, config.ToFormatList())
+
+		if matched {
+			return formatter, nil
+		} else {
+			return FileFormatter{}, fmt.Errorf("did not find a formatter for the path specified %s", path)
+		}
+	} else {
+		return FileFormatter{}, fmt.Errorf("file does not exist, exiting")
+	}
+}
+
+func Format(config configloader.Config, directory string, use_git bool, use_diff bool, abs_path bool, file_formatters []FileFormatter) (int, string, string, error) {
+	var err error
 	var output string
 	counter := 0
 	var tempdiffdir string
 	var diff_need_formatting []DiffFormatter
 	var paths []string
 
-	need_formatting, err := matchFiles(directory, config.ToFormatList(), config.IgnoreToGlob(), use_git)
+	need_formatting := file_formatters
 
-	if err != nil {
-		return 0, "", "", err
+	if len(file_formatters) == 0 {
+		need_formatting, err = matchFiles(directory, config.ToFormatList(), config.IgnoreToGlob(), use_git)
+
+		if err != nil {
+			return 0, "", "", err
+		}
 	}
 
 	if use_diff {
