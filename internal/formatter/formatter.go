@@ -5,26 +5,28 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/amyy54/uformat/internal/configloader"
 )
 
-func Format(config configloader.Config, directory string, use_git bool, use_diff bool) (int, string, error) {
+func Format(config configloader.Config, directory string, use_git bool, use_diff bool, abs_path bool) (int, string, string, error) {
 	var output string
 	counter := 0
 	var tempdiffdir string
 	var diff_need_formatting []DiffFormatter
+	var paths []string
 
 	need_formatting, err := matchFiles(directory, config.ToFormatList(), config.IgnoreToGlob(), use_git)
 
 	if err != nil {
-		return 0, "", err
+		return 0, "", "", err
 	}
 
 	if use_diff {
 		diff_need_formatting, tempdiffdir, err = substituteDiffPaths(directory, need_formatting)
 		if err != nil {
-			return 0, "", err
+			return 0, "", "", err
 		}
 
 		need_formatting = []FileFormatter{}
@@ -43,23 +45,28 @@ func Format(config configloader.Config, directory string, use_git bool, use_diff
 		slog.Info(fmt.Sprintf("%d) running formatter for file %s", num+1, getRelativePath(logdir, need_to_format.File)), "format", need_to_format.ToLogString())
 		if p_output, err := process_execution(need_to_format); err == nil {
 			output += p_output
+			if abs_path {
+				paths = append(paths, need_to_format.File)
+			} else {
+				paths = append(paths, getRelativePath(logdir, need_to_format.File))
+			}
 			if len(output) > 0 {
 				slog.Debug("output", "output", output)
 			}
 		} else {
-			return 0, "", err
+			return 0, "", "", err
 		}
 	}
 
 	if use_diff {
 		output, err = generateDiffOutput(directory, diff_need_formatting, use_git)
 		if err != nil {
-			return 0, "", err
+			return 0, "", "", err
 		}
 		os.RemoveAll(tempdiffdir)
 	}
 
-	return counter, output, nil
+	return counter, output, strings.Join(paths, "\n"), nil
 }
 
 func process_execution(formatter FileFormatter) (string, error) {
