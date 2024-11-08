@@ -1,0 +1,112 @@
+UFORMAT(1)
+===========
+:doctype: manpage
+:manmanual: (U)niversal (Format)ter
+:mansource: uformat: {version}
+
+
+NAME
+----
+uformat - Universal formatter for keeping formats consistent within a project.
+
+
+SYNOPSIS
+--------
+*uformat* ['OPTIONS']
+
+
+DESCRIPTION
+-----------
+uformat utilizes the format settings file contained in the current
+working directory named *.uformat.json*, and formats the project
+according to those rules. Should this file not exist, one final check
+is made to check the user's home directory for a file of the same name.
+
+OPTIONS
+-------
+*-config*='CONFIG_FILE'::
+    Sets the path to the configuration file, overriding the checks in
+    both the current working directory and the home directory of the user.
+
+*-directory*='FORMAT_DIR'::
+    Sets the directory to execute from, overriding the default setting
+    to execute off of the current working directory.
+
+*-file*='FORMAT_FILE'::
+    Instead of formatting an entire directory, only format a single
+    file. The directory option can still be used to format a file in a
+    relative path from that directory, but it is not recommended as it
+    can cause some odd behaviors. The directory option also still
+    remains relevant for options like diff formatting or file
+    identification.
+
+*-diff*::
+    Rather than running the formatters on the files, create temp files
+    to execute formats onto instead. Then, create a diff of the two
+    files and display it in standard output. The temporary files are
+    deleted once the diff is generated. Overrides *-show* and
+    *-show-abs*.
+
+*-ignore-git*::
+    Ignore all git related functions. Notably, git is consulted on
+    whether a file or folder is ignored by default. Should this option
+    be supplied, this check will no longer run.
+
+*-show*::
+    Rather than showing the default message displaying the count of
+    formatted files, print the file names and their *relative paths*
+    compared to the current working directory.
+
+*-show-abs*::
+    Like *-show*, but prints the *absolute paths* of the files.
+
+*-list*::
+    Load the configuration file (either the default paths using the
+    logic described above or a file passed with **-config**) and
+    display the format rules found in the file.
+
+*-version*::
+    Print the version and exit.
+
+*-v[v]*::
+    Verbose logging.
+
+
+BUGS
+----
+See the issues on the uformat GitHub repository:
+https://github.com/amyy54/uformat/issues
+
+
+AUTHOR
+------
+Amy C public@amyy.me
+
+
+RESOURCES
+---------
+GitHub: https://github.com/amyy54/uformat
+
+
+COPYRIGHT
+---------
+Copyright (c) 2024 Amy C
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
