@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/amyy54/uformat/internal/configloader"
@@ -96,10 +97,11 @@ func process_execution(formatter FileFormatter) (string, error) {
 	}
 
 	var modified_args []string
-	// TODO There is absolutely a better way of doing this.
 	for _, arg := range formatter.Format.Args {
-		if arg == "<file>" {
-			modified_args = append(modified_args, formatter.File)
+		if strings.Contains(arg, "<file>") {
+			modified_args = append(modified_args, strings.ReplaceAll(arg, "<file>", formatter.File))
+		} else if strings.Contains(arg, "<fileName>") {
+			modified_args = append(modified_args, strings.ReplaceAll(arg, "<fileName>", strings.TrimSuffix(formatter.File, filepath.Ext(formatter.File))))
 		} else {
 			modified_args = append(modified_args, arg)
 		}
