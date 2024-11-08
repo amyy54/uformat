@@ -2,9 +2,10 @@ all: test build
 
 GIT_DESCRIBE=$(shell git describe)
 GIT_DESCRIBE_LONG=$(shell git describe --long)
+GIT_DESCRIBE_NO_V=$(shell git describe | sed 's/^v//g')
 
 clean:
-	rm -r ./bin
+	rm -rf ./bin
 
 test:
 	go test ./...
@@ -42,6 +43,10 @@ _macrelease:
 	cp bin/uformat.1 bin/release/darwin-universal/uformat.1
 	tar -cvzf bin/release/bin/darwin-universal.tar.gz -C bin/release darwin-universal
 
+_linuxrelease:
+	ARCH=$(ARCH) VERSION=$(GIT_DESCRIBE_NO_V) UFORMAT_BIN=bin/release/linux-$(ARCH)/uformat UFORMAT_MAN=bin/release/linux-$(ARCH)/uformat.1 nfpm pkg --packager deb --target bin/release/bin
+	ARCH=$(ARCH) VERSION=$(GIT_DESCRIBE_NO_V) UFORMAT_BIN=bin/release/linux-$(ARCH)/uformat UFORMAT_MAN=bin/release/linux-$(ARCH)/uformat.1 nfpm pkg --packager rpm --target bin/release/bin
+
 release: clean manpage
 	mkdir -p ./bin/release/bin
 
@@ -53,5 +58,10 @@ release: clean manpage
 
 	OS=linux ARCH=amd64 $(MAKE) _release
 	OS=linux ARCH=arm64 $(MAKE) _release
+	if $(shell which nfpm); then\
+		ARCH=amd64 $(MAKE) _linuxrelease;\
+		ARCH=arm64 $(MAKE) _linuxrelease;\
+	fi
+
 	OS=windows ARCH=amd64 $(MAKE) _release
 	OS=windows ARCH=arm64 $(MAKE) _release
