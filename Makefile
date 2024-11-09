@@ -11,7 +11,7 @@ test:
 	go test ./...
 
 _manpage:
-	asciidoctor -b manpage -a version="$(GIT_DESCRIBE)" -D $(OUTPUT_MAN) docs/uformat.adoc
+	asciidoctor -b manpage -a version="$(GIT_DESCRIBE)" -D $(OUTPUT_MAN) dist/uformat.adoc
 
 manpage:
 	OUTPUT_MAN=bin/ $(MAKE) _manpage
@@ -44,8 +44,8 @@ _macrelease:
 	tar -cvzf bin/release/bin/darwin-universal.tar.gz -C bin/release darwin-universal
 
 _linuxrelease:
-	ARCH=$(ARCH) VERSION=$(GIT_DESCRIBE_NO_V) UFORMAT_BIN=bin/release/linux-$(ARCH)/uformat UFORMAT_MAN=bin/release/linux-$(ARCH)/uformat.1 nfpm pkg --packager deb --target bin/release/bin
-	ARCH=$(ARCH) VERSION=$(GIT_DESCRIBE_NO_V) UFORMAT_BIN=bin/release/linux-$(ARCH)/uformat UFORMAT_MAN=bin/release/linux-$(ARCH)/uformat.1 nfpm pkg --packager rpm --target bin/release/bin
+	ARCH=$(ARCH) VERSION=$(GIT_DESCRIBE_NO_V) UFORMAT_BIN=bin/release/linux-$(ARCH)/uformat UFORMAT_MAN=bin/release/linux-$(ARCH)/uformat.1 nfpm pkg --config dist/nfpm.yaml --packager deb --target bin/release/bin
+	ARCH=$(ARCH) VERSION=$(GIT_DESCRIBE_NO_V) UFORMAT_BIN=bin/release/linux-$(ARCH)/uformat UFORMAT_MAN=bin/release/linux-$(ARCH)/uformat.1 nfpm pkg --config dist/nfpm.yaml --packager rpm --target bin/release/bin
 
 release: clean manpage
 	mkdir -p ./bin/release/bin
