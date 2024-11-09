@@ -40,6 +40,14 @@ OPTIONS
     remains relevant for options like diff formatting or file
     identification.
 
+*-module*='MODULE_NAME'::
+    Instead of using all the formatters present in the configuration
+    file, only use the one with the name specified. This name is the
+    key in the key value pair of the format configuration block. This
+    name is checked case-insensitively. Passing this option suppresses
+    all warnings regarding files not being covered by the loaded
+    configuration.
+
 *-diff*::
     Rather than running the formatters on the files, create temp files
     to execute formats onto instead. Then, create a diff of the two

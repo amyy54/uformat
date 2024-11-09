@@ -1,6 +1,11 @@
 package configloader
 
-import "github.com/gobwas/glob"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/gobwas/glob"
+)
 
 type Config struct {
 	Version int                  `json:"version"`
@@ -20,6 +25,19 @@ func (c *Config) ToFormatList() []Formatter {
 		res = append(res, formats)
 	}
 	return res
+}
+
+func (c *Config) FilterFormatList(filter string) ([]Formatter, error) {
+	var res []Formatter
+	for name, formats := range c.Formats {
+		if strings.EqualFold(name, filter) {
+			res = append(res, formats)
+		}
+	}
+	if len(res) == 0 {
+		return []Formatter{}, fmt.Errorf("formatter does not exist in loaded configuration file")
+	}
+	return res, nil
 }
 
 func (c *Config) IgnoreToGlob() []glob.Glob {

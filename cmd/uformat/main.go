@@ -27,6 +27,7 @@ func main() {
 	var show_files bool
 	var show_abs bool
 	var single_file string
+	var format_module string
 
 	var v bool
 	var vv bool
@@ -43,6 +44,7 @@ func main() {
 	flag.BoolVar(&show_files, "show", false, "List the files formatted using their relative path.")
 	flag.BoolVar(&show_abs, "show-abs", false, "List the files formatted using their absolute path. Overrides -show.")
 	flag.StringVar(&single_file, "file", "", "Instead of formatting a directory, format the specified file.")
+	flag.StringVar(&format_module, "module", "", "Format using only the specified module.")
 
 	flag.BoolVar(&v, "v", false, "Print logs tagged \"Info\" or higher.")
 	flag.BoolVar(&vv, "vv", false, "Print logs tagged \"Debug\" or higher.")
@@ -114,7 +116,7 @@ func main() {
 			if err != nil {
 				log.Fatal("could not resolve the passed file")
 			}
-			single_formatter, err := formatter.MatchSingle(config, abs_single_file)
+			single_formatter, err := formatter.MatchSingle(config, abs_single_file, format_module)
 			if err != nil {
 				log.Fatal(err)
 			} else {
@@ -122,7 +124,7 @@ func main() {
 			}
 
 		}
-		count, output, paths, err := formatter.Format(config, target_dir, formatter.FormatOptions{UseGit: !ignore_git, Diff: diff_mode, AbsolutePath: show_abs, FileFormatters: parsed_files})
+		count, output, paths, err := formatter.Format(config, target_dir, formatter.FormatOptions{UseGit: !ignore_git, Diff: diff_mode, AbsolutePath: show_abs, FileFormatters: parsed_files, FormatModule: format_module})
 
 		if err != nil {
 			log.Fatal(err)

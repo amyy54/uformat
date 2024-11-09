@@ -13,7 +13,7 @@ import (
 	"github.com/amyy54/uformat/internal/configloader"
 )
 
-func matchFiles(directory string, formatters []configloader.Formatter, ignores []glob.Glob, use_git bool) ([]FileFormatter, error) {
+func matchFiles(directory string, formatters []configloader.Formatter, ignores []glob.Glob, use_git bool, suppress_fnf bool) ([]FileFormatter, error) {
 	var res []FileFormatter
 
 	if file_info, err := os.Stat(directory); err == nil {
@@ -40,7 +40,9 @@ func matchFiles(directory string, formatters []configloader.Formatter, ignores [
 							if found, formatter := matchFile(path, formatters); found {
 								res = append(res, formatter)
 							} else {
-								slog.Warn("did not find a formatter for the path specified", "path", path)
+								if !suppress_fnf {
+									slog.Warn("did not find a formatter for the path specified", "path", path)
+								}
 							}
 						}
 					}

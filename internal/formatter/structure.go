@@ -26,4 +26,5 @@ type FormatOptions struct {
 	Diff           bool
 	AbsolutePath   bool
 	FileFormatters []FileFormatter
+	FormatModule   string
 }

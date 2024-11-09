@@ -11,9 +11,16 @@ import (
 	"github.com/amyy54/uformat/internal/configloader"
 )
 
-func MatchSingle(config configloader.Config, path string) (FileFormatter, error) {
+func MatchSingle(config configloader.Config, path string, format_module string) (FileFormatter, error) {
 	if _, err := os.Stat(path); err == nil {
-		matched, formatter := matchFile(path, config.ToFormatList())
+		config_formats := config.ToFormatList()
+		if len(format_module) > 0 {
+			config_formats, err = config.FilterFormatList(format_module)
+			if err != nil {
+				return FileFormatter{}, err
+			}
+		}
+		matched, formatter := matchFile(path, config_formats)
 
 		if matched {
 			return formatter, nil
@@ -36,7 +43,14 @@ func Format(config configloader.Config, directory string, options FormatOptions)
 	need_formatting := options.FileFormatters
 
 	if len(options.FileFormatters) == 0 {
-		need_formatting, err = matchFiles(directory, config.ToFormatList(), config.IgnoreToGlob(), options.UseGit)
+		config_formats := config.ToFormatList()
+		if len(options.FormatModule) > 0 {
+			config_formats, err = config.FilterFormatList(options.FormatModule)
+			if err != nil {
+				return 0, "", "", err
+			}
+		}
+		need_formatting, err = matchFiles(directory, config_formats, config.IgnoreToGlob(), options.UseGit, len(options.FormatModule) > 0)
 
 		if err != nil {
 			return 0, "", "", err
