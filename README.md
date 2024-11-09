@@ -24,10 +24,18 @@ Usage of uformat:
         Instead of formatting, print the difference. This acts as a universal dry-run.
   -directory string
         Target directory to format. (default ".")
+  -file string
+        Instead of formatting a directory, format the specified file.
   -ignore-git
         Ignore git and all related functions, such as checking gitignore.
   -list
         List available formats in the loaded configuration file.
+  -module string
+        Format using only the specified module.
+  -show
+        List the files formatted using their relative path.
+  -show-abs
+        List the files formatted using their absolute path. Overrides -show.
   -v    Print logs tagged "Info" or higher.
   -version
         Print the version and exit.
