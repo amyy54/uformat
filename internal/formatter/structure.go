@@ -20,3 +20,10 @@ type DiffFormatter struct {
 	FileFormatter
 	DiffOriginal string
 }
+
+type FormatOptions struct {
+	UseGit         bool
+	Diff           bool
+	AbsolutePath   bool
+	FileFormatters []FileFormatter
+}

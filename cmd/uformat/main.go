@@ -122,7 +122,7 @@ func main() {
 			}
 
 		}
-		count, output, paths, err := formatter.Format(config, target_dir, !ignore_git, diff_mode, show_abs, parsed_files)
+		count, output, paths, err := formatter.Format(config, target_dir, formatter.FormatOptions{UseGit: !ignore_git, Diff: diff_mode, AbsolutePath: show_abs, FileFormatters: parsed_files})
 
 		if err != nil {
 			log.Fatal(err)

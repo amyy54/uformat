@@ -25,7 +25,7 @@ func MatchSingle(config configloader.Config, path string) (FileFormatter, error)
 	}
 }
 
-func Format(config configloader.Config, directory string, use_git bool, use_diff bool, abs_path bool, file_formatters []FileFormatter) (int, string, string, error) {
+func Format(config configloader.Config, directory string, options FormatOptions) (int, string, string, error) {
 	var err error
 	var output string
 	counter := 0
@@ -33,17 +33,17 @@ func Format(config configloader.Config, directory string, use_git bool, use_diff
 	var diff_need_formatting []DiffFormatter
 	var paths []string
 
-	need_formatting := file_formatters
+	need_formatting := options.FileFormatters
 
-	if len(file_formatters) == 0 {
-		need_formatting, err = matchFiles(directory, config.ToFormatList(), config.IgnoreToGlob(), use_git)
+	if len(options.FileFormatters) == 0 {
+		need_formatting, err = matchFiles(directory, config.ToFormatList(), config.IgnoreToGlob(), options.UseGit)
 
 		if err != nil {
 			return 0, "", "", err
 		}
 	}
 
-	if use_diff {
+	if options.Diff {
 		diff_need_formatting, tempdiffdir, err = substituteDiffPaths(directory, need_formatting)
 		if err != nil {
 			return 0, "", "", err
@@ -57,7 +57,7 @@ func Format(config configloader.Config, directory string, use_git bool, use_diff
 
 	slog.Debug("----------") // Starting process logs
 	logdir := directory
-	if use_diff {
+	if options.Diff {
 		logdir = tempdiffdir
 	}
 	for num, need_to_format := range need_formatting {
@@ -65,7 +65,7 @@ func Format(config configloader.Config, directory string, use_git bool, use_diff
 		slog.Info(fmt.Sprintf("%d) running formatter for file %s", num+1, getRelativePath(logdir, need_to_format.File)), "format", need_to_format.ToLogString())
 		if p_output, err := process_execution(need_to_format); err == nil {
 			output += p_output
-			if abs_path {
+			if options.AbsolutePath {
 				paths = append(paths, need_to_format.File)
 			} else {
 				paths = append(paths, getRelativePath(logdir, need_to_format.File))
@@ -78,8 +78,8 @@ func Format(config configloader.Config, directory string, use_git bool, use_diff
 		}
 	}
 
-	if use_diff {
-		output, err = generateDiffOutput(directory, diff_need_formatting, use_git)
+	if options.Diff {
+		output, err = generateDiffOutput(directory, diff_need_formatting, options.UseGit)
 		if err != nil {
 			return 0, "", "", err
 		}
