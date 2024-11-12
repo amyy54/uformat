@@ -112,9 +112,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	slog.Info("config loaded", "config", config)
+	slog.Debug("config loaded", "config", config)
 
 	if show_formats {
+		slog.Info("config location", "resolve_conf_location", resolve_conf_location)
 		for name, formats := range config.Formats {
 			fmt.Printf("%s, matching \"%s\" with command: %s (%s)\n", name, formats.Glob, formats.Command, strings.Join(formats.Args, " "))
 		}
