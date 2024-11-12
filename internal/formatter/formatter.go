@@ -93,9 +93,28 @@ func Format(config configloader.Config, directory string, options FormatOptions)
 	}
 
 	if options.Diff {
-		output, err = generateDiffOutput(directory, diff_need_formatting, options.UseGit)
-		if err != nil {
-			return 0, "", "", err
+		if len(options.OutputFile) > 0 {
+			if len(diff_need_formatting) > 0 {
+				file_output, err := os.ReadFile(diff_need_formatting[0].File)
+				if err != nil {
+					return 0, "", "", err
+				}
+
+				if options.OutputFile == "-" {
+					output = string(file_output)
+				} else {
+					err = os.WriteFile(options.OutputFile, file_output, os.ModePerm)
+					if err != nil {
+						return 0, "", "", err
+					}
+				}
+			}
+		}
+		if len(options.OutputFile) == 0 || options.OutputFile != "-" {
+			output, err = generateDiffOutput(directory, diff_need_formatting, options.UseGit)
+			if err != nil {
+				return 0, "", "", err
+			}
 		}
 		os.RemoveAll(tempdiffdir)
 	}

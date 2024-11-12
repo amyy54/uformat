@@ -27,4 +27,5 @@ type FormatOptions struct {
 	AbsolutePath   bool
 	FileFormatters []FileFormatter
 	FormatModule   string
+	OutputFile     string
 }

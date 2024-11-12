@@ -49,11 +49,16 @@ OPTIONS
     configuration.
 
 *-diff*::
-    Rather than running the formatters on the files, create temp files
-    to execute formats onto instead. Then, create a diff of the two
-    files and display it in standard output. The temporary files are
-    deleted once the diff is generated. Overrides *-show* and
-    *-show-abs*.
+    Rather than formatting in place, create temp files to execute
+    formatters onto instead. Then, create a diff of the two files and
+    display it in the standard output. The temporary files are deleted
+    once the diff is generated. Overrides *-show* and *-show-abs*.
+
+*-output*='OUTPUT_FILE'::
+    When using *-file* to format a single file, output the formatted
+    file to the specified location. Specify - to output to the standard
+    output. *-diff*, *-show*, and *-show-abs* are only overridden if
+    output is set to standard output.
 
 *-ignore-git*::
     Ignore all git related functions. Notably, git is consulted on

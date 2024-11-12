@@ -28,6 +28,7 @@ func main() {
 	var show_abs bool
 	var single_file string
 	var format_module string
+	var output_file string
 
 	var v bool
 	var vv bool
@@ -45,6 +46,7 @@ func main() {
 	flag.BoolVar(&show_abs, "show-abs", false, "List the files formatted using their absolute path. Overrides -show.")
 	flag.StringVar(&single_file, "file", "", "Instead of formatting a directory, format the specified file.")
 	flag.StringVar(&format_module, "module", "", "Format using only the specified module.")
+	flag.StringVar(&output_file, "output", "", "When using -file, specify the output for the formatted file. - is stdout.")
 
 	flag.BoolVar(&v, "v", false, "Print logs tagged \"Info\" or higher.")
 	flag.BoolVar(&vv, "vv", false, "Print logs tagged \"Debug\" or higher.")
@@ -95,7 +97,15 @@ func main() {
 		log.Fatal("could not resolve target_dir")
 	}
 
-	slog.Debug("flags parsed", "config_location", config_location, "resolved_config_location", resolve_conf_location, "target_dir", target_dir, "show_formats", show_formats, "ignore_git", ignore_git, "diff_mode", diff_mode, "show_files", show_files, "show_abs", show_abs, "single_file", single_file, "format_module", format_module)
+	resolve_output_file := output_file
+	if len(output_file) > 0 && output_file != "-" {
+		resolve_output_file, err = filepath.Abs(resolve_output_file)
+		if err != nil {
+			log.Fatal("could not resolve output_file")
+		}
+	}
+
+	slog.Debug("flags parsed", "config_location", config_location, "resolved_config_location", resolve_conf_location, "target_dir", target_dir, "show_formats", show_formats, "ignore_git", ignore_git, "diff_mode", diff_mode, "show_files", show_files, "show_abs", show_abs, "single_file", single_file, "format_module", format_module, "resolve_output_file", resolve_output_file)
 
 	config, err := configloader.LoadConfig(resolve_conf_location)
 	if err != nil {
@@ -123,13 +133,15 @@ func main() {
 				parsed_files = append(parsed_files, single_formatter)
 			}
 
+		} else {
+			resolve_output_file = ""
 		}
-		count, output, paths, err := formatter.Format(config, target_dir, formatter.FormatOptions{UseGit: !ignore_git, Diff: diff_mode, AbsolutePath: show_abs, FileFormatters: parsed_files, FormatModule: format_module})
+		count, output, paths, err := formatter.Format(config, target_dir, formatter.FormatOptions{UseGit: !ignore_git, Diff: (diff_mode || len(resolve_output_file) > 0), AbsolutePath: show_abs, FileFormatters: parsed_files, FormatModule: format_module, OutputFile: resolve_output_file})
 
 		if err != nil {
 			log.Fatal(err)
 		} else {
-			if diff_mode {
+			if diff_mode || resolve_output_file == "-" {
 				fmt.Print(output)
 			} else if show_files || show_abs {
 				fmt.Println(paths)
