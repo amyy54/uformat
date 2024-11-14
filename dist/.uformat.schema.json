@@ -1,0 +1,57 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://amyy.me/static/files/uformat/1/.uformat.schema.json",
+    "title": ".uformat",
+    "description": "uformat configuration file. https://github.com/amyy54/uformat.",
+    "additionalProperties": false,
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "Optional schema reference for validators. Introduced v0.4.0.",
+            "const": "https://amyy.me/static/files/uformat/1/.uformat.schema.json"
+        },
+        "version": {
+            "type": "integer",
+            "description": "Version of the configuration file. Increments when a breaking change is introduced.",
+            "const": 1
+        },
+        "formats": {
+            "type": "object",
+            "description": "Formatters. Stored in a block with the name being the general formatter name.",
+            "patternProperties": {
+                ".*": {
+                    "type": "object",
+                    "description": "Formatter block.",
+                    "properties": {
+                        "glob": {
+                            "type": "string",
+                            "description": "Glob used to match files for the formatter. Can contain more than one match pattern by separating with a vertical line (|)."
+                        },
+                        "command": {
+                            "type": "string",
+                            "description": "Formatter command, for example 'black' or 'gofmt'."
+                        },
+                        "args": {
+                            "type": "array",
+                            "description": "Arguments to be passed to the formatter command.",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": ["glob", "command", "args"]
+                }
+            }
+        },
+        "ignore": {
+            "type": "array",
+            "description": "Globs that are used to ignore files. Matches by absolute paths.",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true
+        }
+    },
+    "required": ["version", "formats", "ignore"]
+}
