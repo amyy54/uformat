@@ -64,6 +64,12 @@ OPTIONS
     whether a file or folder is ignored by default. Should this option
     be supplied, this check will no longer run.
 
+*-stdin*::
+    Read file from standard input. This requires either *-file* or
+    *-module* to be passed in order to know how to format the file.
+    Overrides *-show* and *-showabs*, while *-directory* and
+    *-ignore-git* go unused.
+
 *-show*::
     Rather than showing the default message displaying the count of
     formatted files, print the file names and their *relative paths*

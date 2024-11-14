@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"log/slog"
 	"os"
@@ -29,6 +30,7 @@ func main() {
 	var single_file string
 	var format_module string
 	var output_file string
+	var stdin bool
 
 	var v bool
 	var vv bool
@@ -47,6 +49,7 @@ func main() {
 	flag.StringVar(&single_file, "file", "", "Instead of formatting a directory, format the specified file.")
 	flag.StringVar(&format_module, "module", "", "Format using only the specified module.")
 	flag.StringVar(&output_file, "output", "", "When using -file, specify the output for the formatted file. - is stdout.")
+	flag.BoolVar(&stdin, "stdin", false, "Read from standard input to format file. -file or -module required.")
 
 	flag.BoolVar(&v, "v", false, "Print logs tagged \"Info\" or higher.")
 	flag.BoolVar(&vv, "vv", false, "Print logs tagged \"Debug\" or higher.")
@@ -105,6 +108,14 @@ func main() {
 		}
 	}
 
+	resolve_single_file := single_file
+	if len(single_file) > 0 {
+		resolve_single_file, err = filepath.Abs(resolve_single_file)
+		if err != nil {
+			log.Fatal("could not resolve single_file")
+		}
+	}
+
 	slog.Debug("flags parsed", "config_location", config_location, "resolved_config_location", resolve_conf_location, "target_dir", target_dir, "show_formats", show_formats, "ignore_git", ignore_git, "diff_mode", diff_mode, "show_files", show_files, "show_abs", show_abs, "single_file", single_file, "format_module", format_module, "resolve_output_file", resolve_output_file)
 
 	config, err := configloader.LoadConfig(resolve_conf_location)
@@ -119,21 +130,41 @@ func main() {
 		for name, formats := range config.Formats {
 			fmt.Printf("%s, matching \"%s\" with command: %s (%s)\n", name, formats.Glob, formats.Command, strings.Join(formats.Args, " "))
 		}
-		os.Exit(0)
+	} else if stdin {
+		stat, _ := os.Stdin.Stat()
+		if (stat.Mode() & os.ModeCharDevice) != 0 {
+			log.Fatal("no standard input provided")
+		}
+		inputBytes, err := io.ReadAll(os.Stdin)
+		if err != nil {
+			log.Fatal(err)
+		}
+		output, err := formatter.FormatText(config, string(inputBytes), resolve_single_file, formatter.FormatOptions{
+			UseGit:         !ignore_git,
+			Diff:           diff_mode,
+			AbsolutePath:   show_abs,
+			FileFormatters: []formatter.FileFormatter{},
+			FormatModule:   format_module,
+			OutputFile:     resolve_output_file,
+		})
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			if diff_mode || resolve_output_file == "-" {
+				fmt.Print(output)
+			} else {
+				fmt.Println("✨ Formatted 1 files")
+			}
+		}
 	} else {
 		var parsed_files []formatter.FileFormatter
-		if len(single_file) > 0 {
-			abs_single_file, err := filepath.Abs(single_file)
-			if err != nil {
-				log.Fatal("could not resolve the passed file")
-			}
-			single_formatter, err := formatter.MatchSingle(config, abs_single_file, format_module)
+		if len(resolve_single_file) > 0 {
+			single_formatter, err := formatter.MatchSingle(config, resolve_single_file, format_module)
 			if err != nil {
 				log.Fatal(err)
 			} else {
 				parsed_files = append(parsed_files, single_formatter)
 			}
-
 		} else {
 			resolve_output_file = ""
 		}

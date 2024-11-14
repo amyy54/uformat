@@ -32,6 +32,92 @@ func MatchSingle(config configloader.Config, path string, format_module string) 
 	}
 }
 
+func FormatText(config configloader.Config, input string, path string, options FormatOptions) (string, error) {
+	file, err := os.CreateTemp("", "uformatstdin")
+	if err != nil {
+		return "", err
+	}
+	_, err = file.Write([]byte(input))
+	if err != nil {
+		return "", err
+	}
+
+	tmpPath := file.Name()
+
+	file.Close()
+
+	var diffPath string
+
+	if options.Diff {
+		file, err = os.CreateTemp("", "uformatstdindiff")
+		if err != nil {
+			return "", err
+		}
+		_, err = file.Write([]byte(input))
+		if err != nil {
+			return "", err
+		}
+
+		diffPath = file.Name()
+
+		file.Close()
+	}
+
+	var formatter FileFormatter
+	if len(path) > 0 {
+		var success bool
+		success, formatter = matchFile(path, config.ToFormatList())
+		if !success {
+			return "", fmt.Errorf("did not find a formatter for the path specified %s", path)
+		}
+		formatter.File = tmpPath
+	} else if len(options.FormatModule) > 0 {
+		config_formats, err := config.FilterFormatList(options.FormatModule)
+		if err != nil {
+			return "", err
+		}
+		formatter = FileFormatter{File: tmpPath, Format: config_formats[0]}
+	} else {
+		return "", fmt.Errorf("Either -file or -module needs to be passed to read standard input")
+	}
+	slog.Info("running formatter on standard input", "format", formatter.ToLogString())
+	output, err := process_execution(formatter)
+	if err != nil {
+		return "", err
+	}
+
+	if len(options.OutputFile) > 0 {
+		file_output, err := os.ReadFile(tmpPath)
+		if err != nil {
+			return "", err
+		}
+		if options.OutputFile == "-" {
+			return string(file_output), nil
+		} else {
+			err = os.WriteFile(options.OutputFile, file_output, os.ModePerm)
+			if err != nil {
+				return "", err
+			}
+		}
+	} else if options.Diff {
+		var diffformatters []DiffFormatter
+
+		diffformatters = append(diffformatters, DiffFormatter{FileFormatter: formatter, DiffOriginal: diffPath})
+
+		output, err = generateDiffOutput(filepath.Dir(tmpPath), diffformatters, false)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	os.Remove(tmpPath)
+	if options.Diff {
+		os.Remove(diffPath)
+	}
+
+	return output, nil
+}
+
 func Format(config configloader.Config, directory string, options FormatOptions) (int, string, string, error) {
 	var err error
 	var output string
