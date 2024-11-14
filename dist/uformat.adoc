@@ -17,10 +17,9 @@ SYNOPSIS
 
 DESCRIPTION
 -----------
-uformat utilizes the format settings file contained in the current
-working directory named *.uformat.json*, and formats the project
-according to those rules. Should this file not exist, one final check
-is made to check the user's home directory for a file of the same name.
+uformat is a program that helps keep track of code formatter tools used
+throughout a project. This allows for bulk formatting with multiple
+format programs that only requires the user to run a single command.
 
 OPTIONS
 -------
@@ -83,6 +82,18 @@ OPTIONS
 
 *-v[v]*::
     Verbose logging.
+
+CONFIG_FILE
+~~~~~~~~~~~
+The configuration file is a JSON formatted file that can exist in
+either the current working directory, or the user's home folder. The
+file name will always be *.uformat.json*. This file contains the
+formats that uformat will search and execute, as well as ignore rules
+that can exist independent of Git or the builtin ignores.
+
+The JSON schema for this can be found in the repository, or contained
+at the static schema id:
+https://amyy.me/static/files/uformat/1/.uformat.schema.json
 
 
 BUGS

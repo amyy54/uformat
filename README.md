@@ -14,6 +14,19 @@ I felt like creating a simple tool to keep formats universal with just one
 program is handy, and this allows for multiple format programs to exist in a
 project and run with just one simple tool.
 
+## Install
+
+Pre-compiled binaries can be found on the Releases page.
+
+Support:
+
+- macOS (universal binary Intel/M1).
+- Linux (amd64/arm64). Pre-packaged for Debian/RHEL.
+- Windows (amd64/arm64).
+
+The macOS binary can be installed using brew:
+`brew install amyy54/taps/uformat`.
+
 ## Usage
 
 ```
@@ -32,6 +45,8 @@ Usage of uformat:
         List available formats in the loaded configuration file.
   -module string
         Format using only the specified module.
+  -output string
+        When using -file, specify the output for the formatted file. - is stdout.
   -show
         List the files formatted using their relative path.
   -show-abs
@@ -43,9 +58,8 @@ Usage of uformat:
         Print logs tagged "Debug" or higher.
 ```
 
-## uformat.json
+## Configuration
 
-The format of the file is fairly self explanatory, and can be seen in this
-project. The name is purely decorative and helps for organization. The `ignore`
-section requires some weird formatting (as of now), as it uses absolute path
-names, as opposed to relative.
+The JSON schema for the configuration file (.uformat.json) can be found in
+[the dist folder](dist/.uformat.schema.json). Light documentation is available
+through the schema and its descriptions of values.
