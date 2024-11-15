@@ -51,6 +51,8 @@ Usage of uformat:
         List the files formatted using their relative path.
   -show-abs
         List the files formatted using their absolute path. Overrides -show.
+  -stdin
+        Read from standard input to format file. -file or -module required.
   -v    Print logs tagged "Info" or higher.
   -version
         Print the version and exit.

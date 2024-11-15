@@ -116,7 +116,7 @@ func main() {
 		}
 	}
 
-	slog.Debug("flags parsed", "config_location", config_location, "resolved_config_location", resolve_conf_location, "target_dir", target_dir, "show_formats", show_formats, "ignore_git", ignore_git, "diff_mode", diff_mode, "show_files", show_files, "show_abs", show_abs, "single_file", single_file, "format_module", format_module, "resolve_output_file", resolve_output_file)
+	slog.Debug("flags parsed", "config_location", config_location, "resolved_config_location", resolve_conf_location, "target_dir", target_dir, "show_formats", show_formats, "ignore_git", ignore_git, "diff_mode", diff_mode, "show_files", show_files, "show_abs", show_abs, "single_file", single_file, "format_module", format_module, "resolve_output_file", resolve_output_file, "stdin", stdin)
 
 	config, err := configloader.LoadConfig(resolve_conf_location)
 	if err != nil {
