@@ -93,11 +93,12 @@ OPTIONS
 
 CONFIG_FILE
 ~~~~~~~~~~~
-The configuration file is a JSON formatted file that can exist in
-either the current working directory, or the user's home folder. The
-file name will always be *.uformat.json*. This file contains the
-formats that uformat will search and execute, as well as ignore rules
-that can exist independent of Git or the builtin ignores.
+The configuration file is a JSON formatted file. The file, if not
+specified with the flag *-config*, can exist in either the current
+working directory, or the user's home folder. The file name will
+always be *.uformat.json*. This file contains the formats that uformat
+will search and execute, as well as ignore rules that can exist
+independent of Git or the builtin ignores.
 
 The JSON schema for this can be found in the repository, or contained
 at the static schema id:
