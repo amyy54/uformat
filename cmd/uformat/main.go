@@ -139,7 +139,10 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		output, err := formatter.FormatText(config, string(inputBytes), resolve_single_file, formatter.FormatOptions{
+		if len(resolve_output_file) == 0 && !diff_mode {
+			resolve_output_file = "-"
+		}
+		show_output, output, err := formatter.FormatText(config, string(inputBytes), resolve_single_file, formatter.FormatOptions{
 			UseGit:         !ignore_git,
 			Diff:           diff_mode,
 			AbsolutePath:   show_abs,
@@ -150,7 +153,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		} else {
-			if diff_mode || resolve_output_file == "-" {
+			if show_output {
 				fmt.Print(output)
 			} else {
 				fmt.Println("✨ Formatted 1 files")
